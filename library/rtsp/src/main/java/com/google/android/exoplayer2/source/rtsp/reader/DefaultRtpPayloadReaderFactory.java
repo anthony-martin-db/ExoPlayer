@@ -34,6 +34,9 @@ import com.google.android.exoplayer2.util.MimeTypes;
         return new RtpAc3Reader(payloadFormat);
       case MimeTypes.AUDIO_AAC:
         return new RtpAacReader(payloadFormat);
+      case MimeTypes.AUDIO_ALAW:
+      case MimeTypes.AUDIO_MLAW:
+        return new RtpG711Reader(payloadFormat);
       case MimeTypes.VIDEO_H264:
         return new RtpH264Reader(payloadFormat);
       default:

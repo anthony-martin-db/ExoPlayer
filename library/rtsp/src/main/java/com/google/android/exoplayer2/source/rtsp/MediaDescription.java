@@ -58,6 +58,31 @@ import java.util.HashMap;
           payloadType, /* mediaEncoding= */ mediaInfo[0], clockRate, encodingParameters);
     }
 
+    /** Creates RTPMAP attributes from payload type as defined in RFC 1890 Section 7 */
+    // https://www.rfc-editor.org/rfc/rfc1890#section-7
+    public static RtpMapAttribute createFromStaticPayloadType(int payloadType)
+        throws ParserException {
+      checkArgument(payloadType >= 0 && payloadType < 96);
+      switch (payloadType) {
+        case 0:
+          return new RtpMapAttribute(
+              payloadType,
+              RtpPayloadFormat.RTP_MEDIA_PCMU,
+              8_000,
+              C.INDEX_UNSET
+          );
+        case 8:
+          return new RtpMapAttribute(
+              payloadType,
+              RtpPayloadFormat.RTP_MEDIA_PCMA,
+              8_000,
+              C.INDEX_UNSET
+          );
+        default:
+          throw new IllegalStateException("Static payload type " + payloadType + " not supported.");
+      }
+    }
+
     /** The assigned RTP payload type. */
     public final int payloadType;
     /** The encoding method used in the RTP stream. */
@@ -190,17 +215,27 @@ import java.util.HashMap;
     }
 
     /**
-     * Builds a new {@link MediaDescription} instance.
+     * Builds a new {@link MediaDescription} instance. When the payload type is dynamic (>= 96),
+     * the rtpmap attribute is mandatory. For static types (< 96) rtpmap is used when present,
+     * otherwise the static defaults are used, according to RFC1890 Section 7.
      *
-     * @throws IllegalStateException When the rtpmap attribute (RFC 2327 Page 22) is not set, or
-     *     cannot be parsed.
+     * @throws IllegalStateException When the rtpmap attribute (RFC 2327 Page 22) is not set
+     * when using dynamic types, or cannot be parsed.
      */
     public MediaDescription build() {
       try {
-        // rtpmap attribute is mandatory in RTSP (RFC2326 Section C.1.3).
-        checkState(attributes.containsKey(ATTR_RTPMAP));
-        RtpMapAttribute rtpMapAttribute =
-            RtpMapAttribute.parse(castNonNull(attributes.get(ATTR_RTPMAP)));
+        RtpMapAttribute rtpMapAttribute;
+        // https://www.rfc-editor.org/rfc/rfc2326#appendix-C.1.3
+        if (payloadType >= 96 || attributes.containsKey(ATTR_RTPMAP)) {
+          // In case it is a dynamic payload type, the media attribute "rtpmap" is required
+          checkState(attributes.containsKey(ATTR_RTPMAP));
+          rtpMapAttribute = RtpMapAttribute.parse(castNonNull(attributes.get(ATTR_RTPMAP)));
+        } else {
+          // In case the payload type is a static payload type from RFC 1890,
+          // all information is standardised.
+          rtpMapAttribute = RtpMapAttribute.createFromStaticPayloadType(payloadType);
+        }
+
         return new MediaDescription(this, ImmutableMap.copyOf(attributes), rtpMapAttribute);
       } catch (ParserException e) {
         throw new IllegalStateException(e);

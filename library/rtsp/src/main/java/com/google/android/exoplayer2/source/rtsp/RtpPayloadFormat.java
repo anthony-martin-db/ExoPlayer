@@ -37,6 +37,8 @@ public final class RtpPayloadFormat {
   private static final String RTP_MEDIA_AC3 = "AC3";
   private static final String RTP_MEDIA_MPEG4_GENERIC = "MPEG4-GENERIC";
   private static final String RTP_MEDIA_H264 = "H264";
+  static final String RTP_MEDIA_PCMU = "PCMU";
+  static final String RTP_MEDIA_PCMA = "PCMA";
 
   /** Returns whether the format of a {@link MediaDescription} is supported. */
   public static boolean isFormatSupported(MediaDescription mediaDescription) {
@@ -44,6 +46,8 @@ public final class RtpPayloadFormat {
       case RTP_MEDIA_AC3:
       case RTP_MEDIA_H264:
       case RTP_MEDIA_MPEG4_GENERIC:
+      case RTP_MEDIA_PCMU:
+      case RTP_MEDIA_PCMA:
         return true;
       default:
         return false;
@@ -65,6 +69,10 @@ public final class RtpPayloadFormat {
         return MimeTypes.VIDEO_H264;
       case RTP_MEDIA_MPEG4_GENERIC:
         return MimeTypes.AUDIO_AAC;
+      case RTP_MEDIA_PCMU:
+        return MimeTypes.AUDIO_MLAW;
+      case RTP_MEDIA_PCMA:
+        return MimeTypes.AUDIO_ALAW;
       default:
         throw new IllegalArgumentException(mediaType);
     }
