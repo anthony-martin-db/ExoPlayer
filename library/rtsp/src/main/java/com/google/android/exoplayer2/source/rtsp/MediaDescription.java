@@ -59,7 +59,6 @@ import java.util.HashMap;
     }
 
     /** Creates RTPMAP attributes from payload type as defined in RFC 1890 Section 7 */
-    // https://www.rfc-editor.org/rfc/rfc1890#section-7
     public static RtpMapAttribute createFromStaticPayloadType(int payloadType)
         throws ParserException {
       checkArgument(payloadType >= 0 && payloadType < 96);

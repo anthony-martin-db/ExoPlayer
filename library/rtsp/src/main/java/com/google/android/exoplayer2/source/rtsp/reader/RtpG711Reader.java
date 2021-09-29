@@ -72,11 +72,10 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
         0, null);
   }
 
-  /** Returns the correct sample time from RTP timestamp, accounting for the AAC sampling rate. */
+  /** Returns the correct sample time from RTP timestamp, accounting for the sampling rate. */
   private static long toSampleTimeUs(
       long startTimeOffsetUs, long rtpTimestamp, long firstReceivedRtpTimestamp, int sampleRate) {
-    return startTimeOffsetUs
-        + Util.scaleLargeTimestamp(
+    return startTimeOffsetUs + Util.scaleLargeTimestamp(
         rtpTimestamp - firstReceivedRtpTimestamp,
         /* multiplier= */ C.MICROS_PER_SECOND,
         /* divisor= */ sampleRate);
