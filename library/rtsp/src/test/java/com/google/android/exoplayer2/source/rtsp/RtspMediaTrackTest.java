@@ -221,6 +221,154 @@ public class RtspMediaTrackTest {
   }
 
   @Test
+  public void generatePayloadFormat_withPcmuMediaDescriptionStatic_succeeds() {
+    MediaDescription mediaDescription =
+        new MediaDescription.Builder(
+            MEDIA_TYPE_AUDIO, /* port= */ 0, RTP_AVP_PROFILE, /* payloadType= */ 0)
+            .setConnection("IN IP4 0.0.0.0")
+            .addAttribute(ATTR_CONTROL, "trackID=1")
+            .build();
+
+    RtpPayloadFormat format = RtspMediaTrack.generatePayloadFormat(mediaDescription);
+    RtpPayloadFormat expectedFormat =
+        new RtpPayloadFormat(
+            new Format.Builder()
+                .setSampleMimeType(MimeTypes.AUDIO_MLAW)
+                .setChannelCount(1)
+                .setSampleRate(8_000)
+                .build(),
+            /* rtpPayloadType= */ 0,
+            /* clockRate= */ 8_000,
+            /* fmtpParameters= */ ImmutableMap.of());
+
+    assertThat(format).isEqualTo(expectedFormat);
+  }
+
+  @Test
+  public void generatePayloadFormat_withPcmuMediaDescriptionAsDynamic_succeeds() {
+    MediaDescription mediaDescription =
+        new MediaDescription.Builder(
+            MEDIA_TYPE_AUDIO, /* port= */ 0, RTP_AVP_PROFILE, /* payloadType= */ 96)
+            .setConnection("IN IP4 0.0.0.0")
+            .addAttribute(ATTR_CONTROL, "trackID=1")
+            .addAttribute(ATTR_RTPMAP, "96 PCMU/8000")
+            .build();
+
+    RtpPayloadFormat format = RtspMediaTrack.generatePayloadFormat(mediaDescription);
+    RtpPayloadFormat expectedFormat =
+        new RtpPayloadFormat(
+            new Format.Builder()
+                .setSampleMimeType(MimeTypes.AUDIO_MLAW)
+                .setChannelCount(1)
+                .setSampleRate(8_000)
+                .build(),
+            /* rtpPayloadType= */ 96,
+            /* clockRate= */ 8_000,
+            /* fmtpParameters= */ ImmutableMap.of());
+
+    assertThat(format).isEqualTo(expectedFormat);
+  }
+
+  @Test
+  public void generatePayloadFormat_withPcmuMediaDescriptionAsDynamic16k2channels_succeeds() {
+    MediaDescription mediaDescription =
+        new MediaDescription.Builder(
+            MEDIA_TYPE_AUDIO, /* port= */ 0, RTP_AVP_PROFILE, /* payloadType= */ 96)
+            .setConnection("IN IP4 0.0.0.0")
+            .addAttribute(ATTR_CONTROL, "trackID=1")
+            .addAttribute(ATTR_RTPMAP, "96 PCMU/16000/2")
+            .build();
+
+    RtpPayloadFormat format = RtspMediaTrack.generatePayloadFormat(mediaDescription);
+    RtpPayloadFormat expectedFormat =
+        new RtpPayloadFormat(
+            new Format.Builder()
+                .setSampleMimeType(MimeTypes.AUDIO_MLAW)
+                .setChannelCount(2)
+                .setSampleRate(16_000)
+                .build(),
+            /* rtpPayloadType= */ 96,
+            /* clockRate= */ 16_000,
+            /* fmtpParameters= */ ImmutableMap.of());
+
+    assertThat(format).isEqualTo(expectedFormat);
+  }
+
+  @Test
+  public void generatePayloadFormat_withPcmaMediaDescriptionStatic_succeeds() {
+    MediaDescription mediaDescription =
+        new MediaDescription.Builder(
+            MEDIA_TYPE_AUDIO, /* port= */ 0, RTP_AVP_PROFILE, /* payloadType= */ 8)
+            .setConnection("IN IP4 0.0.0.0")
+            .addAttribute(ATTR_CONTROL, "trackID=1")
+            .build();
+
+    RtpPayloadFormat format = RtspMediaTrack.generatePayloadFormat(mediaDescription);
+    RtpPayloadFormat expectedFormat =
+        new RtpPayloadFormat(
+            new Format.Builder()
+                .setSampleMimeType(MimeTypes.AUDIO_ALAW)
+                .setChannelCount(1)
+                .setSampleRate(8_000)
+                .build(),
+            /* rtpPayloadType= */ 8,
+            /* clockRate= */ 8_000,
+            /* fmtpParameters= */ ImmutableMap.of());
+
+    assertThat(format).isEqualTo(expectedFormat);
+  }
+
+  @Test
+  public void generatePayloadFormat_withPcmaMediaDescriptionAsDynamic_succeeds() {
+    MediaDescription mediaDescription =
+        new MediaDescription.Builder(
+            MEDIA_TYPE_AUDIO, /* port= */ 0, RTP_AVP_PROFILE, /* payloadType= */ 96)
+            .setConnection("IN IP4 0.0.0.0")
+            .addAttribute(ATTR_CONTROL, "trackID=1")
+            .addAttribute(ATTR_RTPMAP, "96 PCMA/8000")
+            .build();
+
+    RtpPayloadFormat format = RtspMediaTrack.generatePayloadFormat(mediaDescription);
+    RtpPayloadFormat expectedFormat =
+        new RtpPayloadFormat(
+            new Format.Builder()
+                .setSampleMimeType(MimeTypes.AUDIO_ALAW)
+                .setChannelCount(1)
+                .setSampleRate(8_000)
+                .build(),
+            /* rtpPayloadType= */ 96,
+            /* clockRate= */ 8_000,
+            /* fmtpParameters= */ ImmutableMap.of());
+
+    assertThat(format).isEqualTo(expectedFormat);
+  }
+
+  @Test
+  public void generatePayloadFormat_withPcmaMediaDescriptionAsDynamic16k2channels_succeeds() {
+    MediaDescription mediaDescription =
+        new MediaDescription.Builder(
+            MEDIA_TYPE_AUDIO, /* port= */ 0, RTP_AVP_PROFILE, /* payloadType= */ 96)
+            .setConnection("IN IP4 0.0.0.0")
+            .addAttribute(ATTR_CONTROL, "trackID=1")
+            .addAttribute(ATTR_RTPMAP, "96 PCMA/16000/2")
+            .build();
+
+    RtpPayloadFormat format = RtspMediaTrack.generatePayloadFormat(mediaDescription);
+    RtpPayloadFormat expectedFormat =
+        new RtpPayloadFormat(
+            new Format.Builder()
+                .setSampleMimeType(MimeTypes.AUDIO_ALAW)
+                .setChannelCount(2)
+                .setSampleRate(16_000)
+                .build(),
+            /* rtpPayloadType= */ 96,
+            /* clockRate= */ 16_000,
+            /* fmtpParameters= */ ImmutableMap.of());
+
+    assertThat(format).isEqualTo(expectedFormat);
+  }
+
+  @Test
   public void rtspMediaTrack_mediaDescriptionContainsRelativeUri_setsCorrectTrackUri() {
     MediaDescription mediaDescription =
         createGenericMediaDescriptionWithControlAttribute("path1/track2");

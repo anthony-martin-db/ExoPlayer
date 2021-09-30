@@ -125,8 +125,8 @@ import com.google.common.collect.ImmutableMap;
     }
 
     checkArgument(clockRate > 0);
-    // Checks if payload type is "dynamic" as defined in RFC3551 Section 3.
-    checkArgument(rtpPayloadType >= 96);
+    // allow static payload types 0 - 95 and dynamic 96 - 127, as per RFC 1890 Section 7.
+    checkArgument(rtpPayloadType >= 0 && rtpPayloadType <= 127);
     return new RtpPayloadFormat(formatBuilder.build(), rtpPayloadType, clockRate, fmtpParameters);
   }
 
